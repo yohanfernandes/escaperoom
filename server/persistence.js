@@ -18,7 +18,6 @@ const RoomSchema = new mongoose.Schema({
   expiresAt: { type: Date },
 });
 
-RoomSchema.index({ roomCode: 1 }, { unique: true });
 RoomSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 let Room = null;
