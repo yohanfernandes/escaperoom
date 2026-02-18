@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor">
+  <!-- Raven/crow silhouette in flight -->
+  <path d="M8 34 Q14 20 24 22 Q28 14 38 16 Q50 12 56 20 Q50 28 42 28 Q48 36 50 46 Q42 40 36 44 Q32 54 26 50 Q28 40 22 38 Q14 44 8 38 Z"/>
+  <ellipse cx="48" cy="20" rx="3" ry="2.5" fill="#0c0b09"/>
+</svg>

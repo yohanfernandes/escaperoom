@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor">
+  <!-- Eye outline -->
+  <path d="M6 32 Q20 10 32 10 Q44 10 58 32 Q44 54 32 54 Q20 54 6 32 Z"/>
+  <!-- Pupil cutout -->
+  <circle cx="32" cy="32" r="10" fill="#0c0b09"/>
+  <!-- Iris -->
+  <circle cx="32" cy="32" r="5" fill="currentColor"/>
+</svg>

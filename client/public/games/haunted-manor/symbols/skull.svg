@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor">
+  <!-- Skull cranium -->
+  <path d="M32 6 C 16 6 8 18 8 30 C 8 40 14 46 22 48 L 22 56 L 42 56 L 42 48 C 50 46 56 40 56 30 C 56 18 48 6 32 6 Z"/>
+  <!-- Eye sockets -->
+  <circle cx="24" cy="28" r="7" fill="#0c0b09"/>
+  <circle cx="40" cy="28" r="7" fill="#0c0b09"/>
+  <!-- Teeth gaps -->
+  <rect x="22" y="50" width="6" height="5" rx="1" fill="#0c0b09"/>
+  <rect x="36" y="50" width="6" height="5" rx="1" fill="#0c0b09"/>
+</svg>

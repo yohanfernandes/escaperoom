@@ -706,3 +706,352 @@ a:hover { text-decoration: underline; }
 button, input, select, textarea {
   touch-action: manipulation;
 }
+
+/* ════════════════════════════════════════════════════════
+   ROOM SCENE CANVAS (Pilot view)
+════════════════════════════════════════════════════════ */
+.scene-canvas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scene-image-wrapper {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg);
+  /* Minimum height so hotspots are visible even before image loads */
+  min-height: 260px;
+}
+
+.scene-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.scene-image-placeholder {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--bg),
+    var(--bg) 10px,
+    var(--surface) 10px,
+    var(--surface) 20px
+  );
+}
+.scene-placeholder-hint {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.scene-placeholder-hint code {
+  font-family: monospace;
+  color: var(--gold-dim);
+}
+
+/* ── Hotspots — invisible, exploration-based ─────────── */
+.hotspot {
+  position: absolute;
+  border-radius: 4px;
+  cursor: default;
+}
+
+/* Available hotspots: only visual change is the cursor */
+.hotspot-available {
+  cursor: pointer;
+}
+
+/* ════════════════════════════════════════════════════════
+   PUZZLE MODAL (slide-up drawer)
+════════════════════════════════════════════════════════ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 150;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-drawer {
+  width: 100%;
+  max-width: 680px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  padding: 1.2rem 1.4rem 2.4rem;
+  max-height: 82vh;
+  overflow-y: auto;
+  animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title {
+  font-size: 1.05rem;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+.modal-close { padding: 0.2rem 0.5rem; font-size: 0.85rem; }
+
+.modal-body { display: flex; flex-direction: column; gap: 0.6rem; }
+
+/* Strip the redundant panel chrome when a puzzle is inside the modal */
+.modal-body .puzzle-panel {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+.modal-body .puzzle-panel.locked,
+.modal-body .puzzle-panel.solved {
+  padding: 0.4rem 0;
+}
+
+/* ════════════════════════════════════════════════════════
+   COMBINATION LOCK DIALS
+════════════════════════════════════════════════════════ */
+.combination-lock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.dial-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.dial-btn {
+  width: 38px;
+  height: 28px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dial-btn:hover {
+  background: var(--surface-2);
+  border-color: var(--gold-dim);
+  color: var(--gold);
+}
+
+.dial-digit {
+  width: 38px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  font-family: monospace;
+  font-size: 1.7rem;
+  color: var(--gold);
+  font-weight: bold;
+  letter-spacing: 0;
+}
+
+.dial-submit { margin-top: 0.2rem; }
+
+/* ════════════════════════════════════════════════════════
+   SYMBOL SEQUENCE
+════════════════════════════════════════════════════════ */
+.symbol-sequence {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Progress row — filled slots */
+.symbol-progress {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.sequence-slot {
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+}
+.sequence-slot.filled { border-color: var(--gold-dim); }
+.sequence-slot.empty  { opacity: 0.45; }
+.sequence-number { font-size: 0.85rem; color: var(--text-dim); font-family: monospace; }
+.sequence-symbol-img {
+  width: 34px;
+  height: 34px;
+  /* Gold tint for SVG icons rendered with currentColor */
+  filter: invert(70%) sepia(60%) saturate(350%) hue-rotate(10deg) brightness(0.9);
+}
+
+/* Symbol grid */
+.symbol-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  max-width: 260px;
+}
+
+.symbol-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.55rem 0.4rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.symbol-btn:hover:not(:disabled) {
+  border-color: var(--gold-dim);
+  background: var(--surface-3);
+}
+.symbol-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.symbol-btn.symbol-used { opacity: 0.35; }
+
+.symbol-img {
+  width: 36px;
+  height: 36px;
+  filter: invert(80%) sepia(20%) saturate(200%) hue-rotate(10deg);
+}
+.symbol-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.symbol-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* ════════════════════════════════════════════════════════
+   NAVIGATOR CLUE IMAGES + LIGHTBOX
+════════════════════════════════════════════════════════ */
+.nav-clue-panel { gap: 0; }
+
+.clue-image-frame {
+  display: block;
+  width: 100%;
+  cursor: zoom-in;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: none;
+  padding: 0;
+  text-align: center;
+  transition: border-color var(--transition);
+}
+.clue-image-frame:hover { border-color: var(--gold-dim); }
+
+.clue-image {
+  display: block;
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+.clue-image-caption {
+  display: block;
+  padding: 0.25rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-style: italic;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  cursor: zoom-out;
+  animation: fadeIn 0.2s ease;
+}
+
+.lightbox-image {
+  max-width: 92vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+}
+
+.lightbox-close {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — visual additions
+════════════════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .dial-row { gap: 0.35rem; }
+  .dial-digit { width: 34px; height: 46px; font-size: 1.4rem; }
+  .dial-btn   { width: 34px; }
+  .symbol-grid { max-width: 220px; }
+  .modal-drawer { padding-bottom: 3rem; }
+  .scene-image-wrapper { min-height: 180px; }
+}

@@ -1,6 +1,15 @@
 // The Haunted Manor — GameModule implementation
 // Pure logic: no side effects, no I/O. All functions are synchronous.
 
+const SYMBOLS = [
+  { id: 'moon',    label: 'Moon'    },
+  { id: 'raven',   label: 'Raven'   },
+  { id: 'flame',   label: 'Flame'   },
+  { id: 'eye',     label: 'Eye'     },
+  { id: 'skull',   label: 'Skull'   },
+  { id: 'serpent', label: 'Serpent' },
+];
+
 const INITIAL_PUZZLES = {
   'entrance-code': {
     status: 'available',
@@ -16,6 +25,7 @@ const INITIAL_PUZZLES = {
       correctCode: '1847',
       caseSensitive: false,
       placeholder: 'Enter 4-digit year',
+      imageUrl: '/games/haunted-manor/clue-gatehouse.jpg',
     },
     unlocksWhen: [],
     solvedAt: null,
@@ -32,10 +42,11 @@ const INITIAL_PUZZLES = {
       pilotPrompt:
         'A grand portrait of the Count hangs in the gallery. His coat is adorned with coloured gems.\nHow many gems in total? Enter the number.',
       navigatorPrompt:
-        'You find a dusty purchase ledger, dated 1847:\n\n  "Commissioned for the Count\'s portrait coat:\n   — 3 rubies (red)\n   — 5 emeralds (green)\n   — 2 sapphires (blue)"\n\nCount the total and tell your partner.',
+        "You find a dusty purchase ledger, dated 1847:\n\n  \"Commissioned for the Count's portrait coat:\n   — 3 rubies (red)\n   — 5 emeralds (green)\n   — 2 sapphires (blue)\"\n\nCount the total and tell your partner.",
       correctCode: '10',
       caseSensitive: false,
       placeholder: 'Enter number',
+      imageUrl: '/games/haunted-manor/clue-ledger.jpg',
     },
     unlocksWhen: ['entrance-code'],
     solvedAt: null,
@@ -46,16 +57,18 @@ const INITIAL_PUZZLES = {
     status: 'locked',
     visibleTo: 'both',
     interactableBy: 'pilot',
-    kind: 'code_input',
+    kind: 'symbol_sequence',
     label: 'The Cellar Lock',
     data: {
       pilotPrompt:
-        'The cellar is sealed with an iron padlock that requires a 4-letter word.\nA faint carving on the door reads: "Speak my name."',
+        'The cellar door is sealed with an ancient symbol lock.\nFour carved symbols must be pressed in the correct order to open it.\nYour Navigator holds the cipher key — ask them which symbols and in what order.',
       navigatorPrompt:
-        'A note pinned to the pantry wall, written in shaking hand:\n\n  "When shadows fall and ravens call,\n   speak the word that binds us all.\n   It means the void, it means the night —\n   four letters long, it shuns the light."\n\nThe word rhymes with "park". Tell your partner.',
-      correctCode: 'dark',
+        'You find a parchment cipher key pinned to the wall. It maps symbols to letters:\n\nThe word that opens the cellar lock is "DARK" — four letters, four symbols.\nUse the cipher chart above to find which symbol represents each letter.\nThen tell your Pilot the order: first, second, third, fourth.',
+      correctCode: 'moon,raven,flame,eye',
       caseSensitive: false,
-      placeholder: 'Enter 4-letter word',
+      symbols: SYMBOLS,
+      maxClicks: 4,
+      imageUrl: '/games/haunted-manor/clue-cipher.jpg',
     },
     unlocksWhen: ['entrance-code'],
     solvedAt: null,
@@ -66,16 +79,17 @@ const INITIAL_PUZZLES = {
     status: 'locked',
     visibleTo: 'both',
     interactableBy: 'pilot',
-    kind: 'code_input',
+    kind: 'combination_lock',
     label: 'The Grandfather Clock',
     data: {
       pilotPrompt:
-        'The grandfather clock has stopped, its hands frozen in time.\nA lock on the pendulum cabinet requires the time displayed — enter as HHMM in 24-hour format.',
+        'The grandfather clock has stopped, its hands frozen in time.\nA lock on the pendulum cabinet requires the time displayed — set the four dials to the correct hour and minute (24-hour format, HHMM).',
       navigatorPrompt:
         'The manor diary, final entry, ink smeared:\n\n  "At half past the eleventh hour of the night,\n   when the old clock chimed its last,\n   the ritual began and the Count was taken."\n\n"Half past the eleventh hour of the night" — work out the 24-hour HHMM and tell your partner.',
       correctCode: '2330',
       caseSensitive: false,
-      placeholder: 'e.g. 2330',
+      digits: 4,
+      imageUrl: '/games/haunted-manor/clue-diary.jpg',
     },
     unlocksWhen: ['portrait-gems', 'cellar-word'],
     solvedAt: null,
@@ -86,16 +100,18 @@ const INITIAL_PUZZLES = {
     status: 'locked',
     visibleTo: 'both',
     interactableBy: 'both',
-    kind: 'code_input',
+    kind: 'combination_lock',
     label: "The Count's Vault",
     data: {
       pilotPrompt:
-        'THE VAULT.\n\nThree digits are engraved above the combination lock in iron numerals:\n\n  4  —  7  —  2\n\nYour partner holds the remaining three digits.\nCombine both halves and enter the full 6-digit code to open the vault — and escape.',
+        'THE VAULT.\n\nThree digits are engraved above the combination lock in iron numerals:\n\n  4  —  7  —  2\n\nYour partner holds the remaining three digits.\nSet all six dials together and unlock the vault to escape.',
       navigatorPrompt:
-        'Behind a loose hearthstone you find a folded scrap of parchment.\nIt reads only:\n\n  "...8 — 9 — 1"\n\nThese are the LAST three digits of the vault code.\nYour partner has the first three. Together, enter the full 6-digit sequence to escape.',
+        'Behind a loose hearthstone you find a folded scrap of parchment.\nIt reads only:\n\n  "...8 — 9 — 1"\n\nThese are the LAST three digits of the vault code.\nYour partner has the first three. Together, enter the full 6-digit sequence to escape.\nYou can also type it below.',
       correctCode: '472891',
       caseSensitive: false,
+      digits: 6,
       placeholder: 'Enter 6-digit code',
+      imageUrl: '/games/haunted-manor/clue-hearthstone.jpg',
     },
     unlocksWhen: ['clock-code'],
     solvedAt: null,
@@ -131,7 +147,6 @@ export default {
   },
 
   applyAction(state, action) {
-    // action: { type, payload, role }
     if (action.type !== 'SUBMIT_CODE') return null;
 
     const { puzzleId, code } = action.payload;
@@ -175,11 +190,16 @@ export default {
       const visible = puzzle.visibleTo === 'both' || puzzle.visibleTo === role;
       if (!visible) continue;
 
-      // Strip the correct answer and build role-appropriate data
-      const { correctCode, pilotPrompt, navigatorPrompt, ...restData } = puzzle.data;
+      // Strip secret fields and build role-appropriate data
+      const { correctCode, pilotPrompt, navigatorPrompt, imageUrl, symbols, ...restData } = puzzle.data;
+
       const displayData = {
         ...restData,
         prompt: role === 'pilot' ? pilotPrompt : navigatorPrompt,
+        // imageUrl only goes to navigator (pilot sees the room scene, not clue images)
+        ...(role === 'navigator' && imageUrl ? { imageUrl } : {}),
+        // symbols only go to pilot (they click the symbol grid)
+        ...(role === 'pilot' && symbols ? { symbols } : {}),
       };
 
       myPuzzles.push({
@@ -201,7 +221,6 @@ export default {
       }
     }
 
-    // Sort partner activity by time
     partnerActivity.sort((a, b) => a.timestamp - b.timestamp);
 
     return {

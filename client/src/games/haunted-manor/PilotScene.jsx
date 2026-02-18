@@ -1,40 +1,39 @@
-import React from 'react';
-import CodeInput from '../../components/puzzles/CodeInput.jsx';
-import { useApp } from '../../context/AppContext.jsx';
-
-const PUZZLE_COMPONENTS = {
-  code_input: CodeInput,
-};
+import React, { useState, useEffect } from 'react';
+import SceneCanvas from './SceneCanvas.jsx';
+import PuzzleModal from '../../components/PuzzleModal.jsx';
 
 export default function PilotScene({ playerView, roomCode }) {
-  const { partnerActivity } = playerView;
+  const { partnerActivity, myPuzzles } = playerView;
+  const [activePuzzleId, setActivePuzzleId] = useState(null);
+
+  const activePuzzle = myPuzzles.find((p) => p.puzzleId === activePuzzleId) ?? null;
+
+  // Auto-close modal when active puzzle gets solved
+  useEffect(() => {
+    if (!activePuzzleId) return;
+    const p = myPuzzles.find((p) => p.puzzleId === activePuzzleId);
+    if (p?.status === 'solved') {
+      const t = setTimeout(() => setActivePuzzleId(null), 700);
+      return () => clearTimeout(t);
+    }
+  }, [myPuzzles, activePuzzleId]);
 
   return (
     <div className="scene pilot-scene">
       <div className="scene-columns">
-        {/* ── Puzzle column ── */}
+        {/* ── Room scene ── */}
         <div className="puzzle-column">
           <div className="column-header">
             <h2>The Manor</h2>
             <p className="column-subtitle">
-              Explore the room. Describe what you see to your Navigator.
+              Click glowing objects to interact with them. Describe what you see to your Navigator.
             </p>
           </div>
 
-          {playerView.myPuzzles.map((puzzle) => {
-            const Component = PUZZLE_COMPONENTS[puzzle.kind] || CodeInput;
-            const canInteract =
-              puzzle.interactableBy === 'both' || puzzle.interactableBy === 'pilot';
-
-            return (
-              <Component
-                key={puzzle.puzzleId}
-                puzzle={puzzle}
-                roomCode={roomCode}
-                canInteract={canInteract}
-              />
-            );
-          })}
+          <SceneCanvas
+            puzzles={myPuzzles}
+            onSelect={setActivePuzzleId}
+          />
         </div>
 
         {/* ── Activity feed ── */}
@@ -58,7 +57,7 @@ export default function PilotScene({ playerView, roomCode }) {
           <div className="role-info-card">
             <h3>Your role: Pilot</h3>
             <ul>
-              <li>You interact with the puzzles</li>
+              <li>Click glowing objects to interact</li>
               <li>Describe what you see to your Navigator</li>
               <li>Your Navigator has the clues you need</li>
               <li>Talk! Communication is everything.</li>
@@ -66,6 +65,13 @@ export default function PilotScene({ playerView, roomCode }) {
           </div>
         </div>
       </div>
+
+      {/* Slide-up puzzle modal */}
+      <PuzzleModal
+        puzzle={activePuzzle}
+        roomCode={roomCode}
+        onClose={() => setActivePuzzleId(null)}
+      />
     </div>
   );
 }
