@@ -7,6 +7,8 @@ import HMPilotScene     from '../games/haunted-manor/PilotScene.jsx';
 import HMNavigatorScene from '../games/haunted-manor/NavigatorScene.jsx';
 import ARPilotScene     from '../games/ares-station/PilotScene.jsx';
 import ARNavigatorScene from '../games/ares-station/NavigatorScene.jsx';
+import BAWPilotScene     from '../games/blackwood-asylum/PilotScene.jsx';
+import BAWNavigatorScene from '../games/blackwood-asylum/NavigatorScene.jsx';
 
 // ── Per-game display config ───────────────────────────────────────────────
 const GAME_CONFIG = {
@@ -36,12 +38,26 @@ const GAME_CONFIG = {
     failureTitle:   'Station Lost',
     failureLine:    (role) => `Orbital decay claimed Prometheus. ARES wins. ${role === 'pilot' ? 'Operator' : 'Analyst'} — there's always another mission.`,
   },
+  'blackwood-asylum': {
+    title:          'Blackwood Asylum',
+    pilotBadge:     '☠ PATIENT',
+    navigatorBadge: '📁 ARCHIVIST',
+    pilotRole:      'You are the Patient — trapped inside Ward B. You can see and interact with the physical space, but your records and files are held elsewhere.',
+    navigatorRole:  'You are the Archivist — you hold the recovered case files, floor plans and documents from outside the asylum. Your contact inside cannot see what you see.',
+    victoryIcon:    '🚪',
+    victoryTitle:   'You Escaped',
+    victoryLine:    (role) => `Blackwood's doors are behind you. ${role === 'pilot' ? 'Patient' : 'Archivist'} — you made it out.`,
+    failureIcon:    '💉',
+    failureTitle:   'The Procedure Begins',
+    failureLine:    (role) => `Dawn broke. They found you. ${role === 'pilot' ? 'Patient' : 'Archivist'} — there is no escape now.`,
+  },
 };
 
 // ── Scene components registry ─────────────────────────────────────────────
 const SCENES = {
-  'haunted-manor': { pilot: HMPilotScene,  navigator: HMNavigatorScene },
-  'ares-station':  { pilot: ARPilotScene,  navigator: ARNavigatorScene },
+  'haunted-manor':   { pilot: HMPilotScene,  navigator: HMNavigatorScene },
+  'ares-station':    { pilot: ARPilotScene,  navigator: ARNavigatorScene },
+  'blackwood-asylum': { pilot: BAWPilotScene, navigator: BAWNavigatorScene },
 };
 
 function formatTime(ms) {

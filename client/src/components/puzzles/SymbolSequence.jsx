@@ -53,6 +53,8 @@ export default function SymbolSequence({ puzzle, canInteract }) {
     );
   }
 
+  const symbolBase = data.symbolBasePath || '/games/haunted-manor';
+
   return (
     <div className={`puzzle-panel available ${shaking ? 'shake' : ''}`}>
       <h3 className="puzzle-label">{label}</h3>
@@ -70,7 +72,7 @@ export default function SymbolSequence({ puzzle, canInteract }) {
               >
                 {sequence[i] ? (
                   <img
-                    src={`/games/haunted-manor/symbols/${sequence[i]}.svg`}
+                    src={`${symbolBase}/symbols/${sequence[i]}.svg`}
                     alt={sequence[i]}
                     className="sequence-symbol-img"
                   />
@@ -85,7 +87,6 @@ export default function SymbolSequence({ puzzle, canInteract }) {
           <div className="symbol-grid">
             {symbols.map(({ id, label: symLabel }) => {
               const usedCount = sequence.filter((s) => s === id).length;
-              const isFullyUsed = usedCount > 0 && sequence.length >= maxClicks;
               return (
                 <button
                   key={id}
@@ -96,7 +97,7 @@ export default function SymbolSequence({ puzzle, canInteract }) {
                   aria-label={`Select symbol: ${symLabel}`}
                 >
                   <img
-                    src={`/games/haunted-manor/symbols/${id}.svg`}
+                    src={`${symbolBase}/symbols/${id}.svg`}
                     alt={symLabel}
                     className="symbol-img"
                   />
