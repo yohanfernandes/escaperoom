@@ -27,19 +27,28 @@ export default function WaitingRoomPage() {
     return () => socket.off('PARTNER_CONNECTED', handler);
   }, [socket, roomCode, navigate]);
 
-  function copyCode() {
-    navigator.clipboard.writeText(roomCode).then(() => {
+  function copyToClipboard(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    } else {
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }
   }
 
-  function copyUrl() {
-    navigator.clipboard.writeText(shareUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
+  function copyCode() { copyToClipboard(roomCode); }
+  function copyUrl()  { copyToClipboard(shareUrl); }
 
   return (
     <div className="page waiting-page">
