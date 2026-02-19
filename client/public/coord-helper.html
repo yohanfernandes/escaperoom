@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hotspot Coordinate Helper</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #111; color: #ddd; font-family: monospace; font-size: 14px; }
+  #controls { padding: 10px 14px; background: #1a1a1a; border-bottom: 1px solid #333; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  #puzzle-select { background: #222; color: #ddd; border: 1px solid #444; padding: 4px 8px; font-family: monospace; font-size: 13px; }
+  #status { color: #f0c040; }
+  #wrapper { position: relative; display: inline-block; cursor: crosshair; }
+  #room { display: block; max-width: 100%; }
+  #crosshair { position: absolute; pointer-events: none; font-size: 11px; background: rgba(0,0,0,0.75); color: #f0c040; padding: 2px 6px; border-radius: 3px; white-space: nowrap; transform: translate(8px, -50%); }
+  #preview-box { position: absolute; pointer-events: none; border: 2px dashed #f0c040; background: rgba(240,192,64,0.1); }
+  #output { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .result-line { background: #1a1a1a; border: 1px solid #333; padding: 8px 12px; border-radius: 4px; display: flex; gap: 10px; align-items: center; }
+  .result-line code { color: #7ec8e3; flex: 1; }
+  .copy-btn { background: #333; border: 1px solid #555; color: #ddd; padding: 3px 10px; cursor: pointer; border-radius: 3px; font-family: monospace; font-size: 12px; }
+  .copy-btn:hover { background: #444; }
+  .copy-btn.copied { color: #5ab352; border-color: #5ab352; }
+  #hint { color: #888; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <label>Game:
+    <select id="game-select" onchange="switchGame(this.value)">
+      <option value="haunted-manor">Haunted Manor</option>
+      <option value="ares-station">ARES Protocol</option>
+    </select>
+  </label>
+  <label>Puzzle:
+    <select id="puzzle-select">
+      <option value="entrance-code">entrance-code</option>
+      <option value="portrait-gems">portrait-gems</option>
+      <option value="cellar-word">cellar-word</option>
+      <option value="clock-code">clock-code</option>
+      <option value="final-vault">final-vault</option>
+    </select>
+  </label>
+  <span id="status">Click top-left corner of the object</span>
+  <span id="hint">Move mouse over image — click TL corner, then BR corner</span>
+</div>
+
+<div id="wrapper">
+  <img id="room" src="/games/haunted-manor/room-scene.jpg" alt="room scene" draggable="false">
+  <div id="crosshair" style="display:none"></div>
+  <div id="preview-box" style="display:none"></div>
+</div>
+
+<div id="output"></div>
+
+<script>
+const GAME_PUZZLES = {
+  'haunted-manor': ['entrance-code','portrait-gems','cellar-word','clock-code','final-vault'],
+  'ares-station':  ['airlock-bypass','power-relay','bio-scanner','ares-terminal','nav-beacon','reactor-core','escape-pod'],
+};
+
+function switchGame(gameId) {
+  const img = document.getElementById('room');
+  img.src = `/games/${gameId}/room-scene.jpg`;
+  const sel = document.getElementById('puzzle-select');
+  sel.innerHTML = GAME_PUZZLES[gameId].map(p => `<option value="${p}">${p}</option>`).join('');
+  firstClick = null;
+  document.getElementById('preview-box').style.display = 'none';
+  document.getElementById('status').textContent = 'Click top-left corner of the object';
+}
+const img       = document.getElementById('room');
+const wrapper   = document.getElementById('wrapper');
+const crosshair = document.getElementById('crosshair');
+const box       = document.getElementById('preview-box');
+const status    = document.getElementById('status');
+const output    = document.getElementById('output');
+const sel       = document.getElementById('puzzle-select');
+
+let firstClick = null;
+
+function pct(px, dim) { return (px / dim * 100).toFixed(1); }
+
+function getPos(e) {
+  const r = img.getBoundingClientRect();
+  const x = Math.max(0, Math.min(e.clientX - r.left, r.width));
+  const y = Math.max(0, Math.min(e.clientY - r.top,  r.height));
+  return { x, y, w: r.width, h: r.height };
+}
+
+wrapper.addEventListener('mousemove', e => {
+  const { x, y, w, h } = getPos(e);
+  crosshair.style.display = 'block';
+  crosshair.style.left = x + 'px';
+  crosshair.style.top  = y + 'px';
+  crosshair.textContent = `${pct(x,w)}%, ${pct(y,h)}%`;
+
+  if (firstClick) {
+    const fx = firstClick.xPx, fy = firstClick.yPx;
+    const bx = Math.min(fx, x), by = Math.min(fy, y);
+    const bw = Math.abs(x - fx), bh = Math.abs(y - fy);
+    box.style.display = 'block';
+    box.style.left   = bx + 'px';
+    box.style.top    = by + 'px';
+    box.style.width  = bw + 'px';
+    box.style.height = bh + 'px';
+  }
+});
+
+wrapper.addEventListener('mouseleave', () => {
+  crosshair.style.display = 'none';
+});
+
+wrapper.addEventListener('click', e => {
+  const { x, y, w, h } = getPos(e);
+  const xp = parseFloat(pct(x, w));
+  const yp = parseFloat(pct(y, h));
+
+  if (!firstClick) {
+    firstClick = { xPx: x, yPx: y, xp, yp };
+    status.textContent = `Top-left set (${xp}%, ${yp}%) — now click bottom-right corner`;
+    box.style.display = 'block';
+    box.style.left    = x + 'px';
+    box.style.top     = y + 'px';
+    box.style.width   = '0';
+    box.style.height  = '0';
+  } else {
+    const x1 = Math.min(firstClick.xp, xp);
+    const y1 = Math.min(firstClick.yp, yp);
+    const bw = Math.abs(xp - firstClick.xp).toFixed(1);
+    const bh = Math.abs(yp - firstClick.yp).toFixed(1);
+    const puzzleId = sel.value;
+    const line = `'${puzzleId}': { x: ${x1.toFixed(1)}, y: ${y1.toFixed(1)}, w: ${bw}, h: ${bh} },`;
+
+    addResult(puzzleId, line);
+    firstClick = null;
+    box.style.display = 'none';
+    status.textContent = 'Saved! Select next puzzle and click top-left corner';
+  }
+});
+
+function addResult(puzzleId, line) {
+  // Remove existing entry for this puzzle
+  const existing = document.getElementById('r-' + puzzleId);
+  if (existing) existing.remove();
+
+  const div = document.createElement('div');
+  div.className = 'result-line';
+  div.id = 'r-' + puzzleId;
+
+  const code = document.createElement('code');
+  code.textContent = line;
+
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  btn.onclick = () => {
+    navigator.clipboard.writeText(line);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  };
+
+  div.appendChild(code);
+  div.appendChild(btn);
+  output.appendChild(div);
+}
+</script>
+</body>
+</html>

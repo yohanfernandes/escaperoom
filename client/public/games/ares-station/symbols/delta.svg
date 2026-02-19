@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Outer triangle (delta) -->
+  <path d="M32 5 L60 59 L4 59 Z" fill="currentColor"/>
+  <!-- Inner triangle cutout for outline effect -->
+  <path d="M32 20 L50 52 L14 52 Z" fill="#0c0b09"/>
+</svg>

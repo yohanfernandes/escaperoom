@@ -19,12 +19,12 @@ export default function PilotScene({ playerView, roomCode }) {
   }, [myPuzzles, activePuzzleId]);
 
   return (
-    <div className="scene pilot-scene">
+    <div className="scene pilot-scene ares-station">
       <div className="scene-columns">
-        {/* ── Room scene ── */}
+        {/* ── Station scene ── */}
         <div className="puzzle-column">
           <div className="column-header">
-            <h2>The Manor</h2>
+            <h2>The Station</h2>
           </div>
 
           <SceneCanvas
@@ -40,7 +40,7 @@ export default function PilotScene({ playerView, roomCode }) {
           </div>
           <div className="activity-feed">
             {partnerActivity.length === 0 ? (
-              <p className="activity-empty">Your Navigator's discoveries will appear here.</p>
+              <p className="activity-empty">Your Analyst's findings will appear here.</p>
             ) : (
               partnerActivity.map((event, i) => (
                 <div key={i} className="activity-item">
@@ -52,17 +52,16 @@ export default function PilotScene({ playerView, roomCode }) {
           </div>
 
           <div className="role-info-card">
-            <h3>Pilot</h3>
+            <h3>Operator</h3>
             <ul>
-              <li>Something in this room is not as it seems.</li>
-              <li>Your partner knows things you do not.</li>
-              <li>Explore. Observe. Communicate.</li>
+              <li>The station is hostile. Trust nothing ARES tells you.</li>
+              <li>Your Analyst has access you don't.</li>
+              <li>Figure it out.</li>
             </ul>
           </div>
         </div>
       </div>
 
-      {/* Slide-up puzzle modal */}
       <PuzzleModal
         puzzle={activePuzzle}
         roomCode={roomCode}

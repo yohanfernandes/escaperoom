@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Hexagonal energy shield (outer) -->
+  <path d="M32 4 L54 17 L54 47 L32 60 L10 47 L10 17 Z" fill="currentColor"/>
+  <!-- Inner hex cutout -->
+  <path d="M32 15 L46 23 L46 41 L32 49 L18 41 L18 23 Z" fill="#0c0b09"/>
+  <!-- Inner detail dot -->
+  <circle cx="32" cy="32" r="4" fill="currentColor"/>
+</svg>

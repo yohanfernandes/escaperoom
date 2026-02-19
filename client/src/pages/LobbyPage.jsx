@@ -2,6 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
 
+const DIFFICULTY_LABELS = ['', 'Easy', 'Moderate', 'Hard', 'Expert', 'Extreme'];
+
+function DifficultyBadge({ level = 1 }) {
+  const max = 5;
+  const label = DIFFICULTY_LABELS[level] || 'Unknown';
+  return (
+    <span className="difficulty-badge" title={`Difficulty: ${label}`}>
+      {Array.from({ length: max }).map((_, i) => (
+        <span key={i} className={i < level ? 'diff-pip filled' : 'diff-pip'} />
+      ))}
+      <span className="difficulty-label">{label}</span>
+    </span>
+  );
+}
+
 export default function LobbyPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,15 +28,18 @@ export default function LobbyPage() {
   const [error, setError] = useState(location.state?.error || '');
   const [loading, setLoading] = useState(false);
 
-  // Fetch available games from API
   useEffect(() => {
     fetch('/api/games')
       .then((r) => r.json())
       .then(setGames)
-      .catch(() => setGames([{ id: 'haunted-manor', displayName: 'The Haunted Manor', estimatedMinutes: 30 }]));
+      .catch(() =>
+        setGames([
+          { id: 'haunted-manor', displayName: 'The Haunted Manor', estimatedMinutes: 30, difficulty: 2 },
+          { id: 'ares-station',  displayName: 'ARES Protocol',      estimatedMinutes: 45, difficulty: 4 },
+        ])
+      );
   }, []);
 
-  // ── Create room ───────────────────────────────────────────────────────────
   function handleCreate() {
     if (!connected) return setError('Not connected to server');
     setLoading(true);
@@ -43,14 +61,12 @@ export default function LobbyPage() {
     socket.once('ROOM_CREATED', onCreated);
     socket.once('ERROR', onError);
 
-    // Cleanup if component unmounts
     return () => {
       socket.off('ROOM_CREATED', onCreated);
       socket.off('ERROR', onError);
     };
   }
 
-  // ── Join room ─────────────────────────────────────────────────────────────
   function handleJoin(e) {
     e.preventDefault();
     const code = joinCode.trim().toUpperCase();
@@ -76,6 +92,8 @@ export default function LobbyPage() {
     socket.once('ERROR', onError);
   }
 
+  const selectedGameData = games.find((g) => g.id === selectedGame);
+
   return (
     <div className="page lobby-page">
       <div className="lobby-container">
@@ -100,14 +118,20 @@ export default function LobbyPage() {
                 onClick={() => setSelectedGame(g.id)}
               >
                 <span className="game-card-name">{g.displayName}</span>
-                <span className="game-card-time">~{g.estimatedMinutes} min</span>
+                <span className="game-card-right">
+                  <span className="game-card-time">~{g.estimatedMinutes} min</span>
+                  <DifficultyBadge level={g.difficulty} />
+                </span>
               </button>
             ))}
           </div>
+
+          {selectedGameData?.description && (
+            <p className="game-description">{selectedGameData.description}</p>
+          )}
         </section>
 
         <div className="lobby-actions">
-          {/* Create room */}
           <div className="action-card">
             <h3>Create a room</h3>
             <p>You'll be the <strong>Pilot</strong> — you interact with the puzzles.</p>
@@ -122,7 +146,6 @@ export default function LobbyPage() {
 
           <div className="action-divider">or</div>
 
-          {/* Join room */}
           <div className="action-card">
             <h3>Join a room</h3>
             <p>You'll be the <strong>Navigator</strong> — you decipher the clues.</p>

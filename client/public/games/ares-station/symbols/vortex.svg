@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round">
+  <!-- Inward spiral (vortex) -->
+  <path d="M32 32
+    C32 20 44 12 54 18
+    C62 24 62 38 54 46
+    C44 56 26 58 14 50
+    C4 42 2 26 10 16
+    C18 6 36 4 48 10
+    C58 16 62 28 60 38"
+    stroke-width="3.5"/>
+  <!-- Arrow tip pointing inward -->
+  <path d="M55 32 L60 38 L54 36" stroke-width="2.5"/>
+</svg>

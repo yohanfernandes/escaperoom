@@ -8,6 +8,6 @@ HOST="root@46.224.157.82"
 echo "==> Deploying escaperoom..."
 
 $SSH -i "$KEY" -o StrictHostKeyChecking=no $HOST \
-  "cd /var/www/escaperoom && git pull origin master && npm install && npm run build && pm2 restart escaperoom && echo '==> Done!'"
+  "cd /var/www/escaperoom && git pull origin master && npm install && npm run build && pm2 restart escaperoom --update-env && echo '==> Done!'"
 
 echo "==> Live at http://46.224.157.82"

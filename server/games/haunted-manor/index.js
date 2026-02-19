@@ -19,9 +19,9 @@ const INITIAL_PUZZLES = {
     label: 'The Entrance Door',
     data: {
       pilotPrompt:
-        'The heavy oak door is sealed with a rusted combination lock. A plaque reads:\n"Enter the year this manor was sealed — only the worthy may enter."',
+        'The heavy oak door is sealed with a rusted combination lock.\nA corroded plaque reads:\n\n"Enter the year this manor was sealed — only the worthy may enter."',
       navigatorPrompt:
-        'On the gatehouse wall, barely legible through the moss:\n\n"In the year of the great storm, the Count sealed his estate forever.\nThe servants whispered the year: one-eight-four-seven."\n\nTell your partner the 4-digit year.',
+        'On the gatehouse wall, barely legible through the moss:\n\n"In the year of the great storm, the Count sealed his estate forever.\nThe servants whispered the year: one-eight-four-seven."',
       correctCode: '1847',
       caseSensitive: false,
       placeholder: 'Enter 4-digit year',
@@ -40,9 +40,9 @@ const INITIAL_PUZZLES = {
     label: 'Portrait Gallery',
     data: {
       pilotPrompt:
-        'A grand portrait of the Count hangs in the gallery. His coat is adorned with coloured gems.\nHow many gems in total? Enter the number.',
+        'A grand portrait of the Count hangs in the gallery. His coat is adorned with coloured gems.\nSomething about them feels deliberate.',
       navigatorPrompt:
-        "You find a dusty purchase ledger, dated 1847:\n\n  \"Commissioned for the Count's portrait coat:\n   — 3 rubies (red)\n   — 5 emeralds (green)\n   — 2 sapphires (blue)\"\n\nCount the total and tell your partner.",
+        "A dusty purchase ledger, dated 1847:\n\n  \"Commissioned for the Count's portrait coat:\n   — 3 rubies (red)\n   — 5 emeralds (green)\n   — 2 sapphires (blue)\"",
       correctCode: '10',
       caseSensitive: false,
       placeholder: 'Enter number',
@@ -61,9 +61,9 @@ const INITIAL_PUZZLES = {
     label: 'The Cellar Lock',
     data: {
       pilotPrompt:
-        'The cellar door is sealed with an ancient symbol lock.\nFour carved symbols must be pressed in the correct order to open it.\nYour Navigator holds the cipher key — ask them which symbols and in what order.',
+        'The cellar door is sealed with an ancient symbol lock.\nFour carved recesses, each waiting for the right symbol.\nThe door yields only to the correct sequence.',
       navigatorPrompt:
-        'You find a parchment cipher key pinned to the wall. It maps symbols to letters:\n\nThe word that opens the cellar lock is "DARK" — four letters, four symbols.\nUse the cipher chart above to find which symbol represents each letter.\nThen tell your Pilot the order: first, second, third, fourth.',
+        'A parchment cipher key, pinned to the wall.\nIt maps symbols to letters.\n\n"Speak my name. Four letters. It shuns the light."',
       correctCode: 'moon,raven,flame,eye',
       caseSensitive: false,
       symbols: SYMBOLS,
@@ -83,9 +83,9 @@ const INITIAL_PUZZLES = {
     label: 'The Grandfather Clock',
     data: {
       pilotPrompt:
-        'The grandfather clock has stopped, its hands frozen in time.\nA lock on the pendulum cabinet requires the time displayed — set the four dials to the correct hour and minute (24-hour format, HHMM).',
+        'The grandfather clock has stopped.\nIts hands are frozen.\nThe pendulum cabinet is locked.',
       navigatorPrompt:
-        'The manor diary, final entry, ink smeared:\n\n  "At half past the eleventh hour of the night,\n   when the old clock chimed its last,\n   the ritual began and the Count was taken."\n\n"Half past the eleventh hour of the night" — work out the 24-hour HHMM and tell your partner.',
+        'The manor diary, final entry, ink smeared:\n\n  "At half past the eleventh hour of the night,\n   when the old clock chimed its last,\n   the ritual began and the Count was taken."',
       correctCode: '2330',
       caseSensitive: false,
       digits: 4,
@@ -104,9 +104,9 @@ const INITIAL_PUZZLES = {
     label: "The Count's Vault",
     data: {
       pilotPrompt:
-        'THE VAULT.\n\nThree digits are engraved above the combination lock in iron numerals:\n\n  4  —  7  —  2\n\nYour partner holds the remaining three digits.\nSet all six dials together and unlock the vault to escape.',
+        'THE VAULT.\n\nThree digits are engraved above the combination lock in iron numerals:\n\n  4  —  7  —  2',
       navigatorPrompt:
-        'Behind a loose hearthstone you find a folded scrap of parchment.\nIt reads only:\n\n  "...8 — 9 — 1"\n\nThese are the LAST three digits of the vault code.\nYour partner has the first three. Together, enter the full 6-digit sequence to escape.\nYou can also type it below.',
+        'Behind a loose hearthstone — a folded scrap of parchment.\nIt reads only:\n\n  "...8 — 9 — 1"',
       correctCode: '472891',
       caseSensitive: false,
       digits: 6,
@@ -130,6 +130,7 @@ export default {
     'The Count sealed his estate in 1847 and was never seen again. You and your partner are trapped inside. Work together — one explores the manor, one deciphers the clues — before the manor claims you too.',
   thumbnailUrl: '/games/haunted-manor/thumb.jpg',
   estimatedMinutes: 30,
+  difficulty: 2,
   minPlayers: 2,
   maxPlayers: 2,
 

@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext.jsx';
 
-// Navigator always sees a "clue panel": image + text + optional code input.
-// Navigator never operates combination_lock dials or symbol_sequence grids —
-// those are pilot-only controls. For final-vault (interactableBy: 'both'),
-// navigator types the full 6-digit code as plain text.
-function NavigatorCluePanel({ puzzle, onShowLightbox }) {
+function AnalystCluePanel({ puzzle, onShowLightbox }) {
   const { dispatchAction } = useApp();
   const { puzzleId, label, status, data, interactableBy } = puzzle;
   const [code, setCode] = useState('');
@@ -27,7 +23,7 @@ function NavigatorCluePanel({ puzzle, onShowLightbox }) {
       <div className="puzzle-panel locked">
         <div className="puzzle-lock-icon">🔒</div>
         <span className="puzzle-label">{label}</span>
-        <span className="puzzle-locked-hint">Solve other puzzles to unlock this</span>
+        <span className="puzzle-locked-hint">Solve other systems to unlock this</span>
       </div>
     );
   }
@@ -50,9 +46,9 @@ function NavigatorCluePanel({ puzzle, onShowLightbox }) {
         <button
           className="clue-image-frame"
           onClick={() => onShowLightbox(data.imageUrl)}
-          aria-label={`Enlarge clue image for ${label}`}
+          aria-label={`Enlarge data for ${label}`}
         >
-          <img src={data.imageUrl} alt={`Clue: ${label}`} className="clue-image" />
+          <img src={data.imageUrl} alt={`Data: ${label}`} className="clue-image" />
           <span className="clue-image-caption">Click to enlarge</span>
         </button>
       )}
@@ -72,12 +68,12 @@ function NavigatorCluePanel({ puzzle, onShowLightbox }) {
             spellCheck={false}
           />
           <button className="btn btn-primary" type="submit" disabled={!code.trim()}>
-            Submit
+            Transmit
           </button>
         </form>
       ) : (
         <p className="puzzle-readonly-hint">
-          Describe this clue to your Pilot.
+          Relay this data to your Operator.
         </p>
       )}
     </div>
@@ -89,16 +85,16 @@ export default function NavigatorScene({ playerView, roomCode }) {
   const [lightboxUrl, setLightboxUrl] = useState(null);
 
   return (
-    <div className="scene navigator-scene">
+    <div className="scene navigator-scene ares-station">
       <div className="scene-columns">
-        {/* ── Clue column ── */}
+        {/* ── Data column ── */}
         <div className="puzzle-column">
           <div className="column-header">
-            <h2>Your Reference</h2>
+            <h2>Mission Data</h2>
           </div>
 
           {myPuzzles.map((puzzle) => (
-            <NavigatorCluePanel
+            <AnalystCluePanel
               key={puzzle.puzzleId}
               puzzle={puzzle}
               onShowLightbox={setLightboxUrl}
@@ -113,7 +109,7 @@ export default function NavigatorScene({ playerView, roomCode }) {
           </div>
           <div className="activity-feed">
             {partnerActivity.length === 0 ? (
-              <p className="activity-empty">Your Pilot's progress will appear here.</p>
+              <p className="activity-empty">Your Operator's progress will appear here.</p>
             ) : (
               partnerActivity.map((event, i) => (
                 <div key={i} className="activity-item">
@@ -125,26 +121,25 @@ export default function NavigatorScene({ playerView, roomCode }) {
           </div>
 
           <div className="role-info-card">
-            <h3>Navigator</h3>
+            <h3>Analyst</h3>
             <ul>
-              <li>The clues are yours. Their meaning, not yet.</li>
-              <li>Your partner sees what you cannot.</li>
-              <li>Read carefully. Nothing is accidental.</li>
+              <li>You have remote access. Use it.</li>
+              <li>Your Operator is inside. You are not.</li>
+              <li>The data holds the answers.</li>
             </ul>
           </div>
         </div>
       </div>
 
-      {/* Lightbox overlay */}
       {lightboxUrl && (
         <div
           className="lightbox-overlay"
           onClick={() => setLightboxUrl(null)}
           role="dialog"
           aria-modal="true"
-          aria-label="Clue image enlarged"
+          aria-label="Data enlarged"
         >
-          <img src={lightboxUrl} alt="Clue enlarged" className="lightbox-image" />
+          <img src={lightboxUrl} alt="Data enlarged" className="lightbox-image" />
           <button
             className="lightbox-close btn btn-ghost"
             onClick={() => setLightboxUrl(null)}

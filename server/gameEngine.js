@@ -30,6 +30,7 @@ export const gameEngine = {
       description: g.description,
       thumbnailUrl: g.thumbnailUrl,
       estimatedMinutes: g.estimatedMinutes,
+      difficulty: g.difficulty ?? 1,
     }));
   },
 };
