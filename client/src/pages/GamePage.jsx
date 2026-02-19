@@ -19,8 +19,8 @@ export default function GamePage() {
       return;
     }
 
-    // If we already have a playing state in context, no need to rejoin
-    if (playerView?.phase === 'playing' || playerView?.phase === 'victory') return;
+    // If we already have an active state in context, no need to rejoin
+    if (['briefing', 'playing', 'victory', 'failed'].includes(playerView?.phase)) return;
 
     // Otherwise, emit REJOIN_ROOM to restore state after page refresh
     didRejoin.current = true;

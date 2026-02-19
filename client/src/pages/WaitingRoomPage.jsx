@@ -10,9 +10,9 @@ export default function WaitingRoomPage() {
 
   const shareUrl = `${window.location.origin}/join/${roomCode}`;
 
-  // Navigate to game when state arrives with phase "playing"
+  // Navigate to game when briefing or playing phase arrives
   useEffect(() => {
-    if (playerView?.phase === 'playing') {
+    if (playerView?.phase === 'briefing' || playerView?.phase === 'playing') {
       navigate(`/game/${roomCode}`, { replace: true });
     }
   }, [playerView, roomCode, navigate]);

@@ -23,6 +23,10 @@ export const gameEngine = {
     return getGame(gameId).checkVictory(state);
   },
 
+  getTimeLimitMs(gameId) {
+    return getGame(gameId).timeLimitMinutes * 60 * 1000;
+  },
+
   listGames() {
     return Object.values(registry).map((g) => ({
       id: g.id,

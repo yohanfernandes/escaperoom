@@ -17,12 +17,20 @@ function DifficultyBadge({ level = 1 }) {
   );
 }
 
+function formatTime(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const m = Math.floor(totalSec / 60).toString().padStart(2, '0');
+  const s = (totalSec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
 export default function LobbyPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { socket, connected, saveSession } = useApp();
 
   const [games, setGames] = useState([]);
+  const [leaderboards, setLeaderboards] = useState({});
   const [selectedGame, setSelectedGame] = useState('haunted-manor');
   const [joinCode, setJoinCode] = useState('');
   const [error, setError] = useState(location.state?.error || '');
@@ -31,7 +39,24 @@ export default function LobbyPage() {
   useEffect(() => {
     fetch('/api/games')
       .then((r) => r.json())
-      .then(setGames)
+      .then((fetchedGames) => {
+        setGames(fetchedGames);
+        // Fetch leaderboards in parallel for all games
+        Promise.all(
+          fetchedGames.map((g) =>
+            fetch(`/api/leaderboard/${g.id}`)
+              .then((r) => r.json())
+              .then((entries) => ({ gameId: g.id, entries }))
+              .catch(() => ({ gameId: g.id, entries: [] }))
+          )
+        ).then((results) => {
+          const lbs = {};
+          for (const { gameId, entries } of results) {
+            lbs[gameId] = entries;
+          }
+          setLeaderboards(lbs);
+        });
+      })
       .catch(() =>
         setGames([
           { id: 'haunted-manor', displayName: 'The Haunted Manor', estimatedMinutes: 30, difficulty: 2 },
@@ -117,11 +142,24 @@ export default function LobbyPage() {
                 className={`game-card ${selectedGame === g.id ? 'selected' : ''}`}
                 onClick={() => setSelectedGame(g.id)}
               >
-                <span className="game-card-name">{g.displayName}</span>
-                <span className="game-card-right">
-                  <span className="game-card-time">~{g.estimatedMinutes} min</span>
-                  <DifficultyBadge level={g.difficulty} />
-                </span>
+                <div className="game-card-main">
+                  <span className="game-card-name">{g.displayName}</span>
+                  <span className="game-card-right">
+                    <span className="game-card-time">~{g.estimatedMinutes} min</span>
+                    <DifficultyBadge level={g.difficulty} />
+                  </span>
+                </div>
+                {leaderboards[g.id]?.length > 0 && (
+                  <div className="game-card-leaderboard">
+                    {leaderboards[g.id].slice(0, 3).map((entry, idx) => (
+                      <div key={idx} className="lb-row">
+                        <span className="lb-rank">#{idx + 1}</span>
+                        <span className="lb-names">{entry.names.join(' & ') || '—'}</span>
+                        <span className="lb-time">{formatTime(entry.timeMs)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </button>
             ))}
           </div>

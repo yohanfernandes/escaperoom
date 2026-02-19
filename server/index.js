@@ -6,6 +6,7 @@ import { dirname, join } from 'path';
 import dotenv from 'dotenv';
 import { roomManager } from './roomManager.js';
 import { connectDB } from './persistence.js';
+import leaderboard from './leaderboard.js';
 
 dotenv.config();
 
@@ -21,6 +22,9 @@ const io = new Server(httpServer, {
     methods: ['GET', 'POST'],
   },
 });
+
+// Give roomManager access to the io instance (needed for timeout-triggered STATE_UPDATEs)
+roomManager.setIo(io);
 
 const PORT = process.env.PORT || 3001;
 const BASE_URL = process.env.BASE_URL || `http://localhost:5173`;
@@ -39,6 +43,10 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
 app.get('/api/games', (_req, res) => {
   res.json(roomManager.listGames());
+});
+
+app.get('/api/leaderboard/:gameId', (req, res) => {
+  res.json(leaderboard.getTopEntries(req.params.gameId));
 });
 
 // ── Socket.io ──────────────────────────────────────────────────────────────
@@ -72,8 +80,8 @@ io.on('connection', (socket) => {
       // Notify pilot that their partner arrived
       socket.to(roomCode).emit('PARTNER_CONNECTED');
 
-      // Start the game, get initial views for both players
-      const views = await roomManager.startGame(roomCode);
+      // Start the briefing phase, get initial views for both players
+      const views = await roomManager.startBriefing(roomCode);
 
       const room = roomManager.getRoom(roomCode);
       const pilotSocketId = room?.players.pilot?.socketId;
@@ -82,7 +90,7 @@ io.on('connection', (socket) => {
       if (pilotSocketId) io.to(pilotSocketId).emit('STATE_UPDATE', views.pilot);
       if (navigatorSocketId) io.to(navigatorSocketId).emit('STATE_UPDATE', views.navigator);
 
-      console.log(`[room] ${roomCode} started — pilot: ${pilotSocketId}, nav: ${navigatorSocketId}`);
+      console.log(`[room] ${roomCode} briefing — pilot: ${pilotSocketId}, nav: ${navigatorSocketId}`);
     } catch (err) {
       socket.emit('ERROR', { message: err.message });
     }
@@ -129,6 +137,21 @@ io.on('connection', (socket) => {
     }
   });
 
+  // ── SUBMIT_NAME ────────────────────────────────────────────────────────
+  socket.on('SUBMIT_NAME', async ({ roomCode, name }) => {
+    try {
+      const result = await roomManager.submitLeaderboardName(roomCode, socket.id, name);
+      if (result.success) {
+        socket.emit('LEADERBOARD_ACCEPTED');
+      } else {
+        socket.emit('LEADERBOARD_REJECTED', { reason: result.reason });
+      }
+    } catch (err) {
+      console.error('[SUBMIT_NAME] error:', err);
+      socket.emit('LEADERBOARD_REJECTED', { reason: 'Server error' });
+    }
+  });
+
   // ── disconnect ─────────────────────────────────────────────────────────
   socket.on('disconnect', async () => {
     console.log(`[socket] disconnect ${socket.id}`);
@@ -142,6 +165,7 @@ io.on('connection', (socket) => {
 // ── Start ──────────────────────────────────────────────────────────────────
 async function start() {
   await connectDB();
+  leaderboard.initLeaderboard();
   httpServer.listen(PORT, () => {
     console.log(`[server] listening on http://localhost:${PORT}`);
   });

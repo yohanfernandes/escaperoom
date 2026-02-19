@@ -3,6 +3,7 @@
 
 import { gameEngine } from './gameEngine.js';
 import { saveRoom, loadRoom } from './persistence.js';
+import leaderboard from './leaderboard.js';
 
 const WORDS = ['TIGER', 'COBRA', 'RAVEN', 'GHOST', 'STORM', 'FLAME', 'FROST', 'VIPER', 'EMBER', 'SHADE'];
 
@@ -18,28 +19,36 @@ const rooms = new Map();
 // socketId → roomCode (for fast disconnect lookup)
 const socketToRoom = new Map();
 
+// Socket.io instance reference (set by server/index.js)
+let ioRef = null;
+
 function getRoleBySocketId(room, socketId) {
   if (room.players.pilot?.socketId === socketId) return 'pilot';
   if (room.players.navigator?.socketId === socketId) return 'navigator';
   return null;
 }
 
-function buildViews(room) {
+function buildViews(room, extra = {}) {
   const { gameId, state, players } = room;
-  // From each player's perspective, "partnerConnected" = is the OTHER player connected?
   const isNavigatorConnected = !!(players.navigator?.socketId && players.navigator?.connected);
   const isPilotConnected = !!(players.pilot?.socketId && players.pilot?.connected);
 
   const pilotView = gameEngine.getPlayerView(gameId, state, 'pilot');
-  pilotView.partnerConnected = isNavigatorConnected; // pilot's partner is navigator
+  pilotView.partnerConnected = isNavigatorConnected;
+  Object.assign(pilotView, extra);
 
   const navView = gameEngine.getPlayerView(gameId, state, 'navigator');
-  navView.partnerConnected = isPilotConnected; // navigator's partner is pilot
+  navView.partnerConnected = isPilotConnected;
+  Object.assign(navView, extra);
 
   return { pilot: pilotView, navigator: navView };
 }
 
 export const roomManager = {
+  setIo(io) {
+    ioRef = io;
+  },
+
   async createRoom(gameId, socketId) {
     // Validate game exists
     gameEngine.listGames(); // throws if engine broken
@@ -106,6 +115,18 @@ export const roomManager = {
     return { room };
   },
 
+  async startBriefing(roomCode) {
+    const room = rooms.get(roomCode);
+    if (!room) throw new Error('Room not found');
+
+    room.state.phase = 'briefing';
+    room.lastActivityAt = new Date();
+
+    await saveRoom(room);
+    return buildViews(room);
+  },
+
+  // Kept for backward compat (not used — replaced by startBriefing)
   async startGame(roomCode) {
     const room = rooms.get(roomCode);
     if (!room) throw new Error('Room not found');
@@ -149,6 +170,47 @@ export const roomManager = {
   async handleAction(roomCode, socketId, type, payload) {
     const room = rooms.get(roomCode);
     if (!room) return { success: false, reason: 'Room not found' };
+
+    // ── START_MISSION intercept (before phase guard) ───────────────────────
+    if (type === 'START_MISSION') {
+      if (room.state.phase !== 'briefing') {
+        return { success: false, reason: 'Not in briefing' };
+      }
+      if (getRoleBySocketId(room, socketId) !== 'pilot') {
+        return { success: false, reason: 'Only the Pilot can begin the mission' };
+      }
+
+      room.state.phase = 'playing';
+      room.state.startedAt = Date.now();
+      room.lastActivityAt = new Date();
+
+      // Schedule failure timeout
+      const timeLimitMs = gameEngine.getTimeLimitMs(room.gameId);
+      room._timeoutId = setTimeout(async () => {
+        const r = rooms.get(roomCode);
+        if (!r || r.state.phase !== 'playing') return;
+        r.state.phase = 'failed';
+        r.status = 'completed';
+        r._timeoutId = null;
+        await saveRoom(r);
+        const views = buildViews(r);
+        const ps = r.players.pilot?.socketId;
+        const ns = r.players.navigator?.socketId;
+        if (ps && ioRef) ioRef.to(ps).emit('STATE_UPDATE', views.pilot);
+        if (ns && ioRef) ioRef.to(ns).emit('STATE_UPDATE', views.navigator);
+      }, timeLimitMs);
+
+      await saveRoom(room);
+      const views = buildViews(room);
+      return {
+        success: true,
+        views,
+        pilotSocketId: room.players.pilot?.socketId,
+        navigatorSocketId: room.players.navigator?.socketId,
+        victory: false,
+      };
+    }
+
     if (room.state.phase !== 'playing') return { success: false, reason: 'Game is not in progress' };
 
     const actingRole = getRoleBySocketId(room, socketId);
@@ -169,21 +231,56 @@ export const roomManager = {
 
     room.state = newState;
     room.lastActivityAt = new Date();
-    if (room.state.phase === 'victory') room.status = 'completed';
+
+    if (room.state.phase === 'victory') {
+      room.status = 'completed';
+      clearTimeout(room._timeoutId);
+      room._timeoutId = null;
+
+      const timeMs = Date.now() - newState.startedAt;
+      room._leaderboardEntry = { gameId: room.gameId, timeMs, names: [], submittedRoles: [] };
+      const eligible = leaderboard.isEligible(room.gameId, timeMs);
+      await saveRoom(room);
+      const views = buildViews(room, { leaderboardEligible: eligible, timeMs });
+      return {
+        success: true,
+        views,
+        pilotSocketId: room.players.pilot?.socketId,
+        navigatorSocketId: room.players.navigator?.socketId,
+        victory: true,
+      };
+    }
 
     await saveRoom(room);
-
     const views = buildViews(room);
-    const pilotSocketId = room.players.pilot?.socketId;
-    const navigatorSocketId = room.players.navigator?.socketId;
-
     return {
       success: true,
       views,
-      pilotSocketId,
-      navigatorSocketId,
-      victory: room.state.phase === 'victory',
+      pilotSocketId: room.players.pilot?.socketId,
+      navigatorSocketId: room.players.navigator?.socketId,
+      victory: false,
     };
+  },
+
+  async submitLeaderboardName(roomCode, socketId, name) {
+    const room = rooms.get(roomCode);
+    if (!room) return { success: false, reason: 'Room not found' };
+    if (room.state.phase !== 'victory') return { success: false, reason: 'Game not in victory state' };
+
+    const role = getRoleBySocketId(room, socketId);
+    if (!role) return { success: false, reason: 'Not authorized' };
+
+    const entry = room._leaderboardEntry;
+    if (!entry) return { success: false, reason: 'No leaderboard entry for this room' };
+    if (entry.submittedRoles.includes(role)) return { success: false, reason: 'Already submitted' };
+
+    const trimmedName = (name || '').trim().slice(0, 30);
+    if (!trimmedName) return { success: false, reason: 'Name cannot be empty' };
+
+    entry.submittedRoles.push(role);
+    await leaderboard.addEntry(roomCode, entry.gameId, trimmedName, entry.timeMs);
+
+    return { success: true };
   },
 
   getPlayerView(roomCode, role) {
@@ -192,6 +289,11 @@ export const roomManager = {
     const view = gameEngine.getPlayerView(room.gameId, room.state, role);
     const partnerRole = role === 'pilot' ? 'navigator' : 'pilot';
     view.partnerConnected = room.players[partnerRole]?.connected ?? false;
+    // Re-attach leaderboard fields if in victory state
+    if (room._leaderboardEntry) {
+      view.leaderboardEligible = leaderboard.isEligible(room.gameId, room._leaderboardEntry.timeMs);
+      view.timeMs = room._leaderboardEntry.timeMs;
+    }
     return view;
   },
 

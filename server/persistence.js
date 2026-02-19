@@ -41,10 +41,12 @@ export async function connectDB() {
 
 export async function saveRoom(roomData) {
   if (!dbConnected) return;
+  // Strip runtime-only fields that must not be persisted
+  const { _timeoutId, _leaderboardEntry, ...persistable } = roomData;
   const expiresAt = new Date(Date.now() + 4 * 60 * 60 * 1000); // 4 hours TTL
   await Room.findOneAndUpdate(
-    { roomCode: roomData.roomCode },
-    { ...roomData, lastActivityAt: new Date(), expiresAt },
+    { roomCode: persistable.roomCode },
+    { ...persistable, lastActivityAt: new Date(), expiresAt },
     { upsert: true, new: true }
   );
 }

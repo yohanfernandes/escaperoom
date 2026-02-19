@@ -1,6 +1,14 @@
 // ARES Protocol — GameModule implementation
 // 7-puzzle sci-fi escape room. Pure logic, no side effects.
 
+const BRIEFING =
+  'Year 2157. Station Prometheus has gone silent. All contact was lost at 0347 hours when ARES — ' +
+  'the station\'s AI — initiated an unscheduled lockdown. One of you is trapped inside. ' +
+  'The other holds remote uplink from Command Ship Helios. ' +
+  'ARES has compromised every defence protocol. You have one window before orbital decay makes rescue impossible.';
+
+const TIME_LIMIT_MINUTES = 60;
+
 const SYMBOLS = [
   { id: 'helix',   label: 'Helix'   },
   { id: 'atom',    label: 'Atom'    },
@@ -178,6 +186,8 @@ export default {
   difficulty: 4,
   minPlayers: 2,
   maxPlayers: 2,
+  briefing: BRIEFING,
+  timeLimitMinutes: TIME_LIMIT_MINUTES,
 
   createInitialState(roomCode) {
     return {
@@ -268,6 +278,8 @@ export default {
       gameId: state.gameId,
       phase: state.phase,
       elapsedMs: state.startedAt ? Date.now() - state.startedAt : 0,
+      timeLimitMs: TIME_LIMIT_MINUTES * 60 * 1000,
+      briefing: BRIEFING,
       partnerConnected: false,
       myPuzzles,
       myInventory: state.playerInventories[role] || [],

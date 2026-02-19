@@ -22,6 +22,9 @@ export function AppProvider({ children }) {
   // Feedback for rejected actions
   const [lastRejection, setLastRejection] = useState(null);
 
+  // Whether audio has been unlocked by user gesture
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
+
   // Connection status
   const [connected, setConnected] = useState(socket.connected);
 
@@ -38,6 +41,7 @@ export function AppProvider({ children }) {
   const clearSession = useCallback(() => {
     saveSession(null);
     setPlayerView(null);
+    setAudioUnlocked(false);
   }, [saveSession]);
 
   // ── Socket lifecycle ──────────────────────────────────────────────────────
@@ -94,6 +98,8 @@ export function AppProvider({ children }) {
         dispatchAction,
         lastRejection,
         setLastRejection,
+        audioUnlocked,
+        setAudioUnlocked,
       }}
     >
       {children}

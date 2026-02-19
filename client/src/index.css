@@ -220,8 +220,7 @@ a:hover { text-decoration: underline; }
 .game-card {
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding: 0.8rem 1rem;
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -434,6 +433,27 @@ a:hover { text-decoration: underline; }
   color: var(--text);
   min-width: 4.5rem;
   text-align: right;
+}
+
+/* Timer urgency states */
+.timer--warning {
+  color: #d9820a;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+@keyframes pulse-fast {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+.timer--danger {
+  color: var(--error-text);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.timer--critical {
+  color: var(--error-text);
+  animation: pulse-fast 0.6s ease-in-out infinite;
 }
 
 /* ── Rejection toast ─────────────────────────────────── */
@@ -1095,6 +1115,221 @@ button, input, select, textarea {
 .ares-station .symbol-img,
 .ares-station .sequence-symbol-img {
   filter: invert(75%) sepia(80%) saturate(400%) hue-rotate(150deg) brightness(1.05);
+}
+
+/* ════════════════════════════════════════════════════════
+   BRIEFING SCREEN
+════════════════════════════════════════════════════════ */
+.briefing-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 5, 4, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: fadeIn 0.5s ease;
+  padding: 1.5rem;
+}
+
+.briefing-card {
+  background: var(--surface);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 2.5rem 3rem;
+  max-width: 540px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  box-shadow: 0 0 80px rgba(201, 168, 76, 0.08);
+}
+
+.briefing-game-title {
+  font-size: 1.6rem;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.briefing-lore {
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.75;
+  font-size: 0.95rem;
+  border-left: 2px solid var(--gold-dim);
+  padding-left: 1rem;
+}
+
+.briefing-role-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.briefing-role-badge {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  font-family: monospace;
+}
+
+.briefing-role-desc {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.briefing-begin-btn {
+  align-self: center;
+  padding: 0.7rem 2.4rem;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+}
+
+.briefing-waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* ════════════════════════════════════════════════════════
+   FAILURE OVERLAY
+════════════════════════════════════════════════════════ */
+.failure-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: fadeIn 0.6s ease;
+}
+
+.failure-card {
+  background: var(--surface);
+  border: 1px solid var(--error);
+  border-radius: var(--radius);
+  padding: 2.5rem 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 0 60px rgba(155, 35, 53, 0.18);
+}
+
+.failure-icon { font-size: 3rem; }
+.failure-card h1 { font-size: 2rem; color: var(--error-text); }
+.failure-time { color: var(--text-muted); font-size: 1rem; }
+.failure-time strong { color: var(--error-text); font-size: 1.2rem; }
+.failure-sub { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
+
+.failure-unsolved {
+  text-align: left;
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+}
+.failure-unsolved-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+.failure-unsolved ul {
+  padding-left: 1.1rem;
+  color: var(--error-text);
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+
+/* ════════════════════════════════════════════════════════
+   LEADERBOARD — victory screen entry form
+════════════════════════════════════════════════════════ */
+.leaderboard-entry-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.leaderboard-eligible-msg {
+  font-size: 0.85rem;
+  color: var(--gold);
+  text-align: center;
+  margin: 0;
+}
+.leaderboard-entry-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.leaderboard-name-input {
+  flex: 1;
+  font-family: monospace;
+}
+.leaderboard-submitted {
+  font-size: 0.88rem;
+  color: var(--success-text);
+  margin: 0;
+}
+
+/* ════════════════════════════════════════════════════════
+   LEADERBOARD — lobby game cards
+════════════════════════════════════════════════════════ */
+.game-card-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.game-card-leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+.lb-rank {
+  color: var(--gold-dim);
+  font-family: monospace;
+  min-width: 1.8rem;
+}
+.lb-names {
+  flex: 1;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb-time {
+  font-family: monospace;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 /* ════════════════════════════════════════════════════════

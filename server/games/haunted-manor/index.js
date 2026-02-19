@@ -1,6 +1,14 @@
 // The Haunted Manor — GameModule implementation
 // Pure logic: no side effects, no I/O. All functions are synchronous.
 
+const BRIEFING =
+  'The Count sealed his estate on a moonless November night in 1847, and vanished. ' +
+  'Three generations of investigators have entered — none have returned. ' +
+  'You are the first team to attempt a full sweep of the manor, armed with nothing but each other. ' +
+  'The estate still breathes, they say. Don\'t let it swallow you.';
+
+const TIME_LIMIT_MINUTES = 45;
+
 const SYMBOLS = [
   { id: 'moon',    label: 'Moon'    },
   { id: 'raven',   label: 'Raven'   },
@@ -133,6 +141,8 @@ export default {
   difficulty: 2,
   minPlayers: 2,
   maxPlayers: 2,
+  briefing: BRIEFING,
+  timeLimitMinutes: TIME_LIMIT_MINUTES,
 
   createInitialState(roomCode) {
     return {
@@ -229,6 +239,8 @@ export default {
       gameId: state.gameId,
       phase: state.phase,
       elapsedMs: state.startedAt ? Date.now() - state.startedAt : 0,
+      timeLimitMs: TIME_LIMIT_MINUTES * 60 * 1000,
+      briefing: BRIEFING,
       partnerConnected: false, // roomManager sets this
       myPuzzles,
       myInventory: state.playerInventories[role] || [],
