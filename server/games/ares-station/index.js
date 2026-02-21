@@ -153,7 +153,7 @@ const INITIAL_PUZZLES = {
       pilotPrompt:
         'REACTOR OFFLINE. ESCAPE POD READY.\n\nLaunch code: 8 digits. This terminal shows the first four:\n\n  5  —  8  —  3  —  1  —  _  —  _  —  _  —  _\n\nCommand Ship Helios is transmitting the final four to your analyst now.',
       navigatorPrompt: '',
-      correctCode: '58316294',
+      correctCode: '58316887',
       caseSensitive: false,
       digits: 8,
       placeholder: 'Enter 8-digit code',
