@@ -53,7 +53,7 @@ function AnalystCluePanel({ puzzle, onShowLightbox }) {
         </button>
       )}
 
-      <p className="puzzle-prompt">{data.prompt}</p>
+      {data.prompt && <p className="puzzle-prompt">{data.prompt}</p>}
 
       {canInteract ? (
         <form onSubmit={handleSubmit} className="code-form">

@@ -2,10 +2,12 @@
 // Pure logic: no side effects, no I/O. All functions are synchronous.
 
 const BRIEFING =
-  'The Count sealed his estate on a moonless November night in 1847, and vanished. ' +
-  'Three generations of investigators have entered — none have returned. ' +
-  'You are the first team to attempt a full sweep of the manor, armed with nothing but each other. ' +
-  'The estate still breathes, they say. Don\'t let it swallow you.';
+  'The Count sealed his estate on a moonless November night in 1847, and vanished without a trace. ' +
+  'What no investigator knew — and what your partner has found in the county archives — is that ' +
+  'the Count hid something in his vault before he disappeared. Something he didn\'t want found. ' +
+  'One of you is inside. The other holds the records. Together you must retrace his final night: ' +
+  'what he valued most, what ritual he performed, and at precisely what hour the clock last chimed. ' +
+  'The vault will open for nothing less.';
 
 const TIME_LIMIT_MINUTES = 45;
 
@@ -27,9 +29,8 @@ const INITIAL_PUZZLES = {
     label: 'The Entrance Door',
     data: {
       pilotPrompt:
-        'The heavy oak door is sealed with a rusted combination lock.\nA corroded plaque reads:\n\n"Enter the year this manor was sealed — only the worthy may enter."',
-      navigatorPrompt:
-        'On the gatehouse wall, barely legible through the moss:\n\n"In the year of the great storm, the Count sealed his estate forever.\nThe servants whispered the year: one-eight-four-seven."',
+        'The front door is sealed. A corroded plaque above the lock reads:\n\n"ENTER THE YEAR I LOCKED MY SECRETS AWAY."\n\nBeyond this door — the portrait hall, the cellar, and somewhere deeper: the vault.',
+      navigatorPrompt: '',
       correctCode: '1847',
       caseSensitive: false,
       placeholder: 'Enter 4-digit year',
@@ -48,9 +49,8 @@ const INITIAL_PUZZLES = {
     label: 'Portrait Gallery',
     data: {
       pilotPrompt:
-        'A grand portrait of the Count hangs in the gallery. His coat is adorned with coloured gems.\nSomething about them feels deliberate.',
-      navigatorPrompt:
-        "A dusty purchase ledger, dated 1847:\n\n  \"Commissioned for the Count's portrait coat:\n   — 3 rubies (red)\n   — 5 emeralds (green)\n   — 2 sapphires (blue)\"",
+        "The Count's portrait fills the hall. His coat is studded with coloured gems.\nA brass plate at the base of the frame reads:\n\n\"THE SUM OF MY COLLECTION — NO MORE, NO LESS — IS THE WEIGHT THE CLOCK REQUIRES.\"",
+      navigatorPrompt: '',
       correctCode: '10',
       caseSensitive: false,
       placeholder: 'Enter number',
@@ -69,9 +69,8 @@ const INITIAL_PUZZLES = {
     label: 'The Cellar Lock',
     data: {
       pilotPrompt:
-        'The cellar door is sealed with an ancient symbol lock.\nFour carved recesses, each waiting for the right symbol.\nThe door yields only to the correct sequence.',
-      navigatorPrompt:
-        'A parchment cipher key, pinned to the wall.\nIt maps symbols to letters.\n\n"Speak my name. Four letters. It shuns the light."',
+        'A hatch in the floor. A symbol lock guards the cellar where the Count conducted his rituals.\nScratched into the stone above it:\n\n"THE NAME SPOKEN IN THE CELLAR IS THE SAME NAME THE CLOCK LAST HEARD."',
+      navigatorPrompt: '',
       correctCode: 'moon,raven,flame,eye',
       caseSensitive: false,
       symbols: SYMBOLS,
@@ -91,9 +90,8 @@ const INITIAL_PUZZLES = {
     label: 'The Grandfather Clock',
     data: {
       pilotPrompt:
-        'The grandfather clock has stopped.\nIts hands are frozen.\nThe pendulum cabinet is locked.',
-      navigatorPrompt:
-        'The manor diary, final entry, ink smeared:\n\n  "At half past the eleventh hour of the night,\n   when the old clock chimed its last,\n   the ritual began and the Count was taken."',
+        'The grandfather clock. Frozen. Its pendulum cabinet is sealed with a four-digit lock.\n\nA tarnished plate below the face reads:\n"I CHIMED ONCE — AT THE HOUR THE RITUAL DEMANDED AND THE COUNT\'S COLLECTION CONFIRMED.\nSET ME TO THAT MOMENT."\n\nBehind this clock is the vault.',
+      navigatorPrompt: '',
       correctCode: '2330',
       caseSensitive: false,
       digits: 4,
@@ -112,9 +110,8 @@ const INITIAL_PUZZLES = {
     label: "The Count's Vault",
     data: {
       pilotPrompt:
-        'THE VAULT.\n\nThree digits are engraved above the combination lock in iron numerals:\n\n  4  —  7  —  2',
-      navigatorPrompt:
-        'Behind a loose hearthstone — a folded scrap of parchment.\nIt reads only:\n\n  "...8 — 9 — 1"',
+        'THE VAULT — hidden behind the clock mechanism.\n\nSix digits seal what the Count locked away. Three are engraved in iron above the dial:\n\n  4  —  7  —  2\n\nThe other three were entrusted to someone outside.\nThey are somewhere in your partner\'s documents.',
+      navigatorPrompt: '',
       correctCode: '472891',
       caseSensitive: false,
       digits: 6,

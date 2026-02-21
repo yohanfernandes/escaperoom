@@ -29,9 +29,8 @@ const INITIAL_PUZZLES = {
     label: 'Emergency Airlock',
     data: {
       pilotPrompt:
-        'LOCKDOWN ACTIVE.\n\nSection 7-Alpha. Emergency override required.\nThe panel is waiting.',
-      navigatorPrompt:
-        'PROMETHEUS STATION — Emergency Procedures Manual, Rev. 14\n\nSection 6 — Airlock Override Codes:\n\n  Section 3-Beta  → 4471\n  Section 5-Gamma → 2293\n  Section 7-Alpha → 7291\n  Section 9-Delta → 8834',
+        'LOCKDOWN ACTIVE. Section 7-Alpha.\n\nThe moment the airlock seals behind you, you hear it — life support alarms deep in the station.\nSector B is losing atmosphere. You need the override code to push further in.\n\nThe panel is waiting.',
+      navigatorPrompt: '',
       correctCode: '7291',
       caseSensitive: false,
       placeholder: '_ _ _ _',
@@ -50,9 +49,8 @@ const INITIAL_PUZZLES = {
     label: 'Power Relay Console',
     data: {
       pilotPrompt:
-        'Sector B life support is failing.\nFour relay dials. Each set 0–9.\nSomething in the station records holds the correct values.',
-      navigatorPrompt:
-        'Station circuit schematic — Sector B:\n\n  Relay A1 (Primary):    4\n  Relay A2 (Secondary):  4\n  Relay A3 (Tertiary):   1\n  Relay A4 (Emergency):  8\n\nNote: Sector A and C settings differ.',
+        'Life support relays for Sector B — all four misaligned. Without restoring them,\nthe path to the ARES core stays sealed behind a pressure lock.\n\nThe correct relay values are in the station schematic your analyst holds.\nSet all four dials.',
+      navigatorPrompt: '',
       correctCode: '4418',
       caseSensitive: false,
       digits: 4,
@@ -71,9 +69,8 @@ const INITIAL_PUZZLES = {
     label: 'Bio-Decontamination Lock',
     data: {
       pilotPrompt:
-        'The decontamination chamber is sealed.\nA symbol panel. Four inputs.\nOne sequence opens it.',
-      navigatorPrompt:
-        'Station Bio-Contamination Protocol, Revision 9:\n\n  Level 1: atom → pulse → delta → circuit\n  Level 2: shield → vortex → atom → helix\n  Level 3: helix → atom → shield → circuit\n  Level 4: vortex → delta → pulse → helix\n\nCurrent contamination level: 3',
+        'The decontamination chamber — the only path to the ARES mainframe on the other side.\nSealed by a symbol lock tied to the current contamination level.\n\nYour analyst has the bio-protocol manual with the correct sequence for each level.',
+      navigatorPrompt: '',
       correctCode: 'helix,atom,shield,circuit',
       caseSensitive: false,
       symbols: SYMBOLS,
@@ -93,9 +90,8 @@ const INITIAL_PUZZLES = {
     label: 'ARES Mainframe Terminal',
     data: {
       pilotPrompt:
-        'The ARES mainframe.\nACCESS DENIED.\n\nCredentials required. No record remains on this terminal.',
-      navigatorPrompt:
-        'ARES ACCESS LOG — last 48 hours (recovered via backup channel):\n\n  [REDACTED]   logged in: ██████\n  [REDACTED]   logged in: ██████\n  Dr. V. Chen  logged in: NEXUS9\n  [REDACTED]   session timed out.\n  [SYSTEM]     LOCKDOWN INITIATED',
+        'The ARES mainframe — the source of the lockdown. Access it and you can find out what ARES\ntriggered and re-enable the rescue beacon. Without it, the beacon stays dark.\n\nACCESS DENIED. No credentials remain on this terminal. Someone logged in just before the lockdown.\nYour analyst may have a recovered record of who.',
+      navigatorPrompt: '',
       correctCode: 'NEXUS9',
       caseSensitive: false,
       placeholder: '_ _ _ _ _ _',
@@ -114,9 +110,8 @@ const INITIAL_PUZZLES = {
     label: 'Navigation Beacon',
     data: {
       pilotPrompt:
-        'The navigation beacon.\nPartial frequency locked in: _ _ _ 2 7 4\nSix dials. The first three digits are unknown.',
-      navigatorPrompt:
-        'Navigation chart — emergency rescue beacon frequencies:\n\n  Sector 7-Gamma rescue channel: 391 ___',
+        'The rescue beacon. ARES corrupted the broadcast frequency during lockdown.\nPartial frequency visible on the display: _ _ _ 2 7 4\nYour analyst\'s navigation chart has the correct sector channel.\n\nWarning: escape pod launch is still locked out.\nThe reactor is running at full power — that comes next.',
+      navigatorPrompt: '',
       correctCode: '391274',
       caseSensitive: false,
       digits: 6,
@@ -135,9 +130,8 @@ const INITIAL_PUZZLES = {
     label: 'Reactor Core Shutdown',
     data: {
       pilotPrompt:
-        'The reactor core.\nFive symbols. Strict sequence.\nDeviation triggers failsafe lockout.',
-      navigatorPrompt:
-        'ARES Reactor Emergency Shutdown Protocol — manual override:\n\n  Phase 1: Graviton field neutralisation  → DELTA\n  Phase 2: Plasma vortex containment      → VORTEX\n  Phase 3: DNA helix stabilisation        → HELIX\n  Phase 4: Pulse dampening                → PULSE\n  Phase 5: Atomic lattice dissolution     → ATOM',
+        'The reactor core. While it runs at full power, the escape pod cannot launch.\n\nManual shutdown requires a five-step symbol override — strict sequence, no errors.\nDeviation triggers permanent failsafe lockout.\nThe emergency shutdown manual is with your analyst.',
+      navigatorPrompt: '',
       correctCode: 'delta,vortex,helix,pulse,atom',
       caseSensitive: false,
       symbols: SYMBOLS,
@@ -157,9 +151,8 @@ const INITIAL_PUZZLES = {
     label: 'Escape Pod Launch',
     data: {
       pilotPrompt:
-        'ESCAPE POD.\n\nLaunch requires an 8-digit code.\nThis terminal shows:\n\n  5  —  8  —  3  —  1  —  _  —  _  —  _  —  _',
-      navigatorPrompt:
-        'Encrypted transmission — Command Ship Helios:\n\n  "...6 — 2 — 9 — 4"',
+        'REACTOR OFFLINE. ESCAPE POD READY.\n\nLaunch code: 8 digits. This terminal shows the first four:\n\n  5  —  8  —  3  —  1  —  _  —  _  —  _  —  _\n\nCommand Ship Helios is transmitting the final four to your analyst now.',
+      navigatorPrompt: '',
       correctCode: '58316294',
       caseSensitive: false,
       digits: 8,
