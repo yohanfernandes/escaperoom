@@ -75,6 +75,7 @@ const INITIAL_PUZZLES = {
       caseSensitive: false,
       symbols: SYMBOLS,
       maxClicks: 4,
+      symbolBasePath: '/games/ares-station',
       imageUrl: '/games/ares-station/clue-bioprotocol.jpg',
     },
     unlocksWhen: ['airlock-bypass'],
@@ -130,12 +131,13 @@ const INITIAL_PUZZLES = {
     label: 'Reactor Core Shutdown',
     data: {
       pilotPrompt:
-        'The reactor core. While it runs at full power, the escape pod cannot launch.\n\nManual shutdown requires a five-step symbol override — strict sequence, no errors.\nDeviation triggers permanent failsafe lockout.\nThe emergency shutdown manual is with your analyst.',
+        'The reactor core. Manual shutdown requires a five-step chemical symbol override.\n\nYour analyst holds the Emergency Symbol Reference Manual.\n\nOverride sequence:   5  —  6  —  1  —  7  —  2\n\nRead each number aloud. Your analyst will identify the correct symbol.',
       navigatorPrompt: '',
       correctCode: 'delta,vortex,helix,pulse,atom',
       caseSensitive: false,
       symbols: SYMBOLS,
       maxClicks: 5,
+      symbolBasePath: '/games/ares-station',
       imageUrl: '/games/ares-station/clue-reactormanual.jpg',
     },
     unlocksWhen: ['nav-beacon'],
